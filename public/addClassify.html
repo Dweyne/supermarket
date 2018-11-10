@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- 引入重置样式 -->
+    <link rel="stylesheet" href="styles/reset.css">
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <!-- 引入当前页面样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 头部 -->
+            <el-header>
+                <h1>欢迎您&nbsp;
+                    <span>admin</span>
+                </h1>
+                <p>查看和管理所有分类</p>
+            </el-header>
+            <!-- 内容 -->
+            <el-main>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>添加分类</span>
+                    </div>
+                    <div class="text item">
+                        <el-form :label-position="labelPosition" :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px"
+                            class="demo-ruleForm">
+                            <el-form-item label="所属分类" prop="classify_blong">
+                                <el-select v-model="ruleForm2.classify_blong" placeholder="---顶级分类---">
+                                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="分类名称" prop="classifyname">
+                                <el-input v-model="ruleForm2.classifyname"></el-input>
+                            </el-form-item>
+                            <el-form-item label="状态">
+                                <el-radio-group v-model="ruleForm2.status">
+                                    <el-radio label="启用"></el-radio>
+                                    <el-radio label="禁用"></el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
+                                <el-button @click="resetForm('ruleForm2')">重置</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </el-card>
+            </el-main>
+        </el-container>
+    </div>
+    <!-- 引入jquery -->
+    <script src="./javascripts/jquery.min.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.min.js"></script>
+    <script src="./javascripts/elementUI.js"></script>
+    <script>
+        //创建vue实例
+        new Vue({
+            //挂载视图
+            el: "#app",
+            data() {
+                var validatePass2 = (rule, value, callback) => {
+                    if (value !== this.ruleForm2.pass) {
+                        callback(new Error('两次输入密码不一致!'));
+                    } else {
+                        callback();
+                    }
+                };
+                return {
+                    labelPosition: 'top',
+                    options: [{
+                        value: '超级管理员',
+                        label: '超级管理员'
+                    }, {
+                        value: '管理员',
+                        label: '管理员'
+                    }, {
+                        value: '普通用户',
+                        label: '普通用户'
+                    }],
+                    ruleForm2: {
+                        classify_blong: '',
+                        classifyname: '',
+                        status: '禁用',
+                    },
+                    rules2: {
+                        classifyname: [
+                            { required: true, message: "请输入密码", trigger: 'change' },
+                        ],
+                        classify_blong: [
+                            { required: true, message: "请选择用户组", trigger: 'change' },
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            // 验证通过
+                            console.log("submit")
+
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

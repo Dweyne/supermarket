@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市管理系统——首页</title>
+    <!-- 引入重置样式 -->
+    <link rel="stylesheet" href="styles/reset.css">
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <!-- 引入当前页面样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 右侧 -->
+            <el-container>
+                <!-- 头部 -->
+                <el-header>
+                    <h1>欢迎您&nbsp;
+                        <span>admin</span>
+                    </h1>
+                    <p>添加管理员账号</p>
+                </el-header>
+                <!-- 内容 -->
+                <el-main>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>添加管理员账号</span>
+                        </div>
+                        <div class="text item">
+                            <el-form :label-position="labelPosition" :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px"
+                                class="demo-ruleForm">
+                                <el-form-item label="用户名" prop="username">
+                                    <el-input v-model="ruleForm2.username"></el-input>
+                                </el-form-item>
+                                <el-form-item label="密码" prop="pass">
+                                    <el-input type="password" v-model="ruleForm2.pass" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <el-form-item label="确认密码" prop="checkPass">
+                                    <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off"></el-input>
+                                </el-form-item>
+                                <el-form-item label="选择用户组" prop="usergroup">
+                                    <el-select v-model="ruleForm2.usergroup" placeholder="请选择用户组">
+                                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
+                                    <el-button @click="resetForm('ruleForm2')">重置</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-card>
+                </el-main>
+
+            </el-container>
+        </el-container>
+    </div>
+
+    <!-- 引入jquery -->
+    <script src="./javascripts/jquery.min.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.min.js"></script>
+    <script src="./javascripts/elementUI.js"></script>
+    <script>
+        //创建vue实例
+        new Vue({
+            //挂载视图
+            el: "#app",
+            data() {
+                var validatePass2 = (rule, value, callback) => {
+                    if (value !== this.ruleForm2.pass) {
+                        callback(new Error('两次输入密码不一致!'));
+                    } else {
+                        callback();
+                    }
+                };
+                return {
+                    message: '',
+                    labelPosition: 'top',
+                    options: [{
+                        value: '超级管理员',
+                        label: '超级管理员'
+                    }, {
+                        value: '管理员',
+                        label: '管理员'
+                    }, {
+                        value: '普通用户',
+                        label: '普通用户'
+                    }],
+                    ruleForm2: {
+                        pass: '',
+                        checkPass: '',
+                        username: '',
+                        usergroup: ''
+                    },
+                    rules2: {
+                        pass: [
+                            { required: true, message: "请输入密码", trigger: 'change' },
+                            { min: 6, max: 12, message: "密码长度为6-12位", trigger: 'change' }
+                        ],
+                        checkPass: [
+                            { required: true, message: "请再次输入密码", trigger: 'change' },
+                            { min: 6, max: 12, message: "确认密码长度为6-12位", trigger: 'change' },
+                            { validator: validatePass2, trigger: 'change' }
+                        ],
+                        username: [
+                            { required: true, message: "请输入用户名", trigger: 'change' },
+                            { min: 5, max: 18, message: "用户名长度为5-18位", trigger: 'change' },
+                        ],
+                        usergroup: [
+                            { required: true, message: "请选择用户组", trigger: 'change' },
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            // 验证通过
+                            $.post('/users/add', this.ruleForm2, (result) => {
+                                if (result.code == 200) {
+                                    this.$notify({
+                                        title: '成功',
+                                        message: result.message,
+                                        type: 'success'
+                                    });
+                                    this.$refs[formName].resetFields();
+                                } else if (result.code == 100) {
+                                    this.$notify.error({
+                                        title: '错误',
+                                        message: result.message
+                                    });
+                                } else {
+                                    this.$notify.error({
+                                        title: '错误',
+                                        message: result.message
+                                    });
+                                }
+                                // console.log(result);
+                            })
+
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+
+        });
+    </script>
+</body>
+
+</html>

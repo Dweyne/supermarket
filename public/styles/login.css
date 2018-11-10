@@ -1,0 +1,54 @@
+.text {
+    font-size: 14px;
+}
+
+.item {
+    margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
+.clearfix:after {
+    clear: both
+}
+
+.box-card {
+    position: absolute;
+    width: 480px;
+    height: 400px;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+.el-card__header{
+    padding: 0 20px;
+}
+body{
+    background-color: cadetblue;
+}
+
+.el-card__body .el-form{
+    margin-right: 50px;
+}
+
+#code{
+    width: 210px;;
+}
+
+#rememberPwd{
+    margin-bottom: 10px;
+}
+#rememberPwd .el-form-item__content{
+    line-height: 20px;
+}
+
+#forgetPwd{
+    margin-left: 128px;
+    text-decoration: none;
+    color: #606266
+}

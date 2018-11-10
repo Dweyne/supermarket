@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市管理系统——首页</title>
+    <!-- 引入重置样式 -->
+    <link rel="stylesheet" href="styles/reset.css">
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <!-- 引入当前页面样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 左侧 -->
+            <el-aside width="200px">
+                <div id="aside-title">
+                    <h1>华蔻超市管理系统</h1>
+                    <p>您好，
+                        <span>admin</span>
+                    </p>
+                    <p>
+                        <a href="./main.html" target="iframe">管理首页</a> |
+                        <a href="#">退出系统</a>
+                    </p>
+                </div>
+                <!-- 导航 -->
+                <el-menu default-active="8-1" class="el-menu-vertical-demo" unique-opened="true">
+                    <!-- 导航菜单 -->
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <span>分类管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <a href="./classifyManage.html" target="iframe"><el-menu-item index="1-1">分类管理</el-menu-item></a>
+                            <a href="./addClassify.html" target="iframe"><el-menu-item index="1-2">添加分类</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <span>商品管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <a href="./productManage.html" target="iframe"><el-menu-item index="2-1">商品管理</el-menu-item></a>
+                            <a href="./addProduct.html" target="iframe"><el-menu-item index="2-2">添加商品</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    
+                    <el-submenu index="3">
+                        <template slot="title">
+                            <span>进货管理</span>
+                        </template>
+                        <!-- 导航子菜单 -->
+                        <el-menu-item-group>
+                            <a href="./stockManage.html" target="iframe"><el-menu-item index="3-1">库存管理</el-menu-item></a>
+                            <a href="./addStock.html" target="iframe"><el-menu-item index="3-2">添加库存</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="4">
+                        <template slot="title">
+                            <span>出货管理</span>
+                        </template>
+                        <!-- 导航子菜单 -->
+                        <el-menu-item-group>
+                            <a href="./saleList.html" target="iframe"><el-menu-item index="4-1">销售列表</el-menu-item></a>
+                            <a href="./outStorage.html" target="iframe"><el-menu-item index="4-2">商品出库</el-menu-item></a>
+                            <a href="./saleReturn.html" target="iframe"><el-menu-item index="4-3">商品退货</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="5">
+                        <template slot="title">
+                            <span>统计管理</span>
+                        </template>
+                        <!-- 导航子菜单 -->
+                        <el-menu-item-group>
+                            <a href="./saleStatistic.html" target="iframe"><el-menu-item index="5-1">销售统计</el-menu-item></a>
+                            <a href="./stockStatistic.html" target="iframe"><el-menu-item index="5-2">进货统计</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="6">
+                        <template slot="title">
+                            <span>账号管理</span>
+                        </template>
+                        <!-- 导航子菜单 -->
+                        <el-menu-item-group>
+                            <a href="./accountManage.html" target="iframe"><el-menu-item index="6-1">账号管理</el-menu-item></a>
+                            <a href="./addUser.html" target="iframe"><el-menu-item index="6-2">添加账号</el-menu-item></a>
+                            <a href="./rePassword.html" target="iframe"><el-menu-item index="6-3">密码修改</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="7">
+                        <template slot="title">
+                            <span>会员管理</span>
+                        </template>
+                        <!-- 导航子菜单 -->
+                        <el-menu-item-group>
+                            <a href="./memberManage.html" target="iframe"><el-menu-item index="7-1">账号管理</el-menu-item></a>
+                            <a href="./addMember.html" target="iframe"><el-menu-item index="7-2">添加账号</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="8">
+                        <template slot="title">
+                            <span>系统管理</span>
+                        </template>
+                        <!-- 导航子菜单 -->
+                        <el-menu-item-group>
+                            <a href="./main.html" target="iframe"><el-menu-item index="8-1">系统信息</el-menu-item></a>
+                        </el-menu-item-group>
+                    </el-submenu>
+
+
+                </el-menu>
+            </el-aside>
+            <!-- 右侧 -->
+            <el-container>
+                <iframe src="main.html" name="iframe" frameborder="0" scrolling="auto" width="100%" height="100%"></iframe>
+                <el-footer height="51">
+                    <p>&copy;Copyright 2018 华蔻超市管理系统</p>
+                </el-footer>
+            </el-container>
+        </el-container>
+    </div>
+
+    <!-- 引入jquery -->
+    <script src="./javascripts/jquery.min.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.min.js"></script>
+    <script src="./javascripts/elementUI.js"></script>
+    <script>
+        //创建vue实例
+        new Vue({
+            //挂载视图
+            el: "#app",
+            data() {
+                return {
+                    activeName: '1',
+                    tableData: [{
+                        date: '2016-05-02',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-04',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1517 弄'
+                    }, {
+                        date: '2016-05-01',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1519 弄'
+                    }, {
+                        date: '2016-05-03',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1516 弄'
+                    }]
+                }
+            },
+
+        });
+    </script>
+</body>
+
+</html>
