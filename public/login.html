@@ -34,7 +34,7 @@
                         <el-input type="text" v-model="ruleForm2.code" autocomplete="off"></el-input>
                     </el-form-item>
                     <el-form-item id="rememberPwd">
-                        <el-checkbox v-model="ruleForm2.checked">记住密码</el-checkbox>
+                        <el-checkbox v-model="checked">记住密码</el-checkbox>
                         <a href="#" id="forgetPwd">忘记密码？</a>
                     </el-form-item>
                     <el-form-item>
@@ -57,11 +57,11 @@
             el: "#app",
             data() {
                 return {
+                    checked: true,
                     ruleForm2: {
+                        code: '',
                         userName: '',
                         checkPass: '',
-                        code: '',
-                        checked: true,
                     },
                     rules2: {
                         userName: [
@@ -82,7 +82,23 @@
                 submitForm(formName) {
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
-                            alert('submit!');
+                            $.post('/users/checkUser', this.ruleForm2, (result) => {
+                                if (result.code == 200) {
+                                    this.$alert(result.message, '登录', {
+                                        confirmButtonText: '确定',
+                                        callback: action => {
+                                            location.href = './index.html';
+                                        }
+                                    });
+                                } else {
+                                    this.$alert(result.message, '登录', {
+                                        confirmButtonText: '确定',
+                                        callback: action => {
+                                            return false;
+                                        }
+                                    });
+                                }
+                            })
                         } else {
                             console.log('error submit!!');
                             return false;

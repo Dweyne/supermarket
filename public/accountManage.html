@@ -34,6 +34,11 @@
                         </div>
                         <div class="text item">
                             <el-table stripe :data="tableData" style="width: 100%">
+                                <el-table-column label="用户ID">
+                                    <template slot-scope="scope">
+                                        <span style="margin-left: 10px">{{ scope.row.u_id }}</span>
+                                    </template>
+                                </el-table-column>
                                 <el-table-column label="用户名称">
                                     <template slot-scope="scope">
                                         <span style="margin-left: 10px">{{ scope.row.userName }}</span>
@@ -44,10 +49,14 @@
                                         <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
                                     </template>
                                 </el-table-column>
+                                <el-table-column label="创建时间" prop="createDate" :formatter="dateFormat">
+                                </el-table-column>
                                 <el-table-column label="操作" width="180">
                                     <template slot-scope="scope">
-                                        <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)" plain><i class="el-icon-edit"></i>编辑</el-button>
-                                        <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" plain><i class="el-icon-delete"></i>删除</el-button>
+                                        <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)" plain>
+                                            <i class="el-icon-edit"></i>编辑</el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" plain>
+                                            <i class="el-icon-delete"></i>删除</el-button>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -63,30 +72,64 @@
     <!-- 引入vue -->
     <script src="./javascripts/vue.min.js"></script>
     <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入moment时间格式化库 -->
+    <script src="./javascripts/moment.js"></script>
     <script>
-        // ajax请求数据
-        $.get('/users/find', (result) => {
-            // console.log(result);
-            //创建vue实例
-            new Vue({
-                //挂载视图
-                el: "#app",
-                data() {
-                    return {
-                        tableData: result
-                    }
-                },
-                methods: {
-                    handleEdit(index, row) {
-                        console.log(index, row);
-                    },
-                    handleDelete(index, row) {
-                        console.log(index, row);
-                    }
-                }
 
-            });
-        })
+        //创建vue实例
+        new Vue({
+            //挂载视图
+            el: "#app",
+            data() {
+                return {
+                    tableData: []
+                }
+            },
+            methods: {
+                getUserList() {
+                    $.get('/users/find', (result) => {
+                        this.tableData = result;
+                    })
+                },
+                // 编辑
+                handleEdit(index, row) {
+                    location.href='./editUser.html?'+row.u_id;
+                },
+                // 删除
+                handleDelete(index, row) {
+                    // 是否删除
+                    this.$confirm('此操作将永久删除该用户, 是否继续?', '警告', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        $.get('/users/delUser', { "u_id": row.u_id }, (result) => {
+                            if (result.code == 200) {
+                                this.$message({
+                                    type: 'success',
+                                    message: result.message
+                                });
+                                this.getUserList();
+                            } else {
+                                console.log(result)
+                                this.$message.error(result.message);
+                            }
+                        });
+                    }).catch(() => {
+
+                    });
+                },
+                dateFormat(row, column) {
+                    let date = row[column.property];
+                    if (date == undefined) return '';
+                    return moment(date).format("YYYY-MM-DD");
+                }
+            },
+            mounted() {
+                // ajax请求数据
+                this.getUserList();
+            }
+        });
 
     </script>
 </body>
