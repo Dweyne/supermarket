@@ -142,3 +142,7 @@ margin-bottom: 40px;
 .product table th div{text-align: center}
 .proHeader{padding-bottom: 20px; border-bottom: 2px solid #ccc}
 .product .el-table__body-wrapper{padding-bottom: 20px;border-bottom: 2px solid #ccc;}
+
+/* 添加产品 */
+.productMan .el-input{width: 70%}
+.productMan .el-form-item__content{width: 50%}

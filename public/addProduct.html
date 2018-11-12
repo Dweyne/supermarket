@@ -22,16 +22,71 @@
                 <h1>欢迎您&nbsp;
                     <span>admin</span>
                 </h1>
-                <p>1.你可以在这里添加新的商品或者编辑已有的商品。2.新添加商品的时候可以同时进行入库(入库必须有数量和进价)！3.带<span style="color: red">*</span>的项目必填</p>
+                <p>1.你可以在这里添加新的商品或者编辑已有的商品。2.新添加商品的时候可以同时进行入库(入库必须有数量和进价)！3.带
+                    <span style="color: red">*</span>的项目必填</p>
             </el-header>
             <!-- 内容 -->
-            <el-main>
+            <el-main class="product">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
                         <span>添加商品</span>
                     </div>
-                    <div class="text item">
-                        
+                    <div class="text item productMan">
+                        <el-form :label-position="labelPosition" :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px"
+                            class="demo-ruleForm">
+                            <el-form-item label="所属分类" prop="cg_id">
+                                <el-select v-model="ruleForm2.cg_id" placeholder="---选择分类---">
+                                    <el-option v-for="item in options1" :key="item.cg_id" :label="item.cg_name" :value="item.cg_id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="商品条形码：" prop="barcode">
+                                <el-input v-model="ruleForm2.barcode"></el-input>
+                                <el-button type="success" @click="generateCode()">生成条形码</el-button>
+                            </el-form-item>
+                            <el-form-item label="商品名称：" prop="goodsname">
+                                <el-input v-model="ruleForm2.goodsname"></el-input>
+                            </el-form-item>
+                            <el-form-item label="商品进价：" prop="goodsprice">
+                                <el-input v-model.number="ruleForm2.goodsprice" @blur="fillPrice()"></el-input> 元
+                            </el-form-item>
+                            <el-form-item label="商品售价：" prop="saleprice">
+                                <el-input v-model="ruleForm2.saleprice"></el-input> 元
+                            </el-form-item>
+                            <el-form-item label="商品市场价：" prop="marketprice">
+                                <el-input v-model="ruleForm2.marketprice"></el-input> 元
+                                <p>默认市场价为售价的1.2倍</p>
+                            </el-form-item>
+                            <el-form-item label="入库数量：" prop="stockNum">
+                                <el-input v-model="ruleForm2.stockNum"></el-input>
+                                <p>计重单位为千克</p>
+                            </el-form-item>
+                            <el-form-item label="商品重量：" prop="weight">
+                                <el-input v-model="ruleForm2.weight"></el-input>
+                            </el-form-item>
+                            <el-form-item label="商品单位：" prop="unit">
+                                <el-input v-model="ruleForm2.unit"></el-input>
+                            </el-form-item>
+                            <el-form-item label="会员优惠">
+                                <el-radio-group v-model="ruleForm2.discount">
+                                    <el-radio label="1">享受</el-radio>
+                                    <el-radio label="0">不享受</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item label="是否促销">
+                                <el-radio-group v-model="ruleForm2.promotion">
+                                    <el-radio label="1">启用</el-radio>
+                                    <el-radio label="0">禁用</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item label="商品简介：" prop="goodsDetails">
+                                <el-input type="textarea" rows="5" v-model="ruleForm2.goodsDetails"></el-input>
+                                <p>不超过200个汉字</p>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm('ruleForm2')">添加</el-button>
+                            </el-form-item>
+                        </el-form>
                     </div>
                 </el-card>
             </el-main>
@@ -49,25 +104,92 @@
             el: "#app",
             data() {
                 return {
-                    activeName: '1',
-                    tableData: [{
-                        date: '2016-05-02',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
-                    }, {
-                        date: '2016-05-04',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1517 弄'
-                    }, {
-                        date: '2016-05-01',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1519 弄'
-                    }, {
-                        date: '2016-05-03',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1516 弄'
-                    }]
+                    options1:[],
+                    labelPosition: 'top',
+                    ruleForm2: {
+                        cg_id: '',
+                        barcode: '',
+                        goodsname: '',
+                        goodsprice: '',
+                        marketprice: 0,
+                        saleprice: 0,
+                        stockNum: 0,
+                        weight: 0,
+                        unit: '',
+                        promotion: '0',
+                        discount: '0',
+                        goodsDetails: ''
+                    },
+                    rules2: {
+                        cg_id: [
+                            { required: true, message: "请选择分类", trigger: 'change' },
+                            { required: true, message: "请选择分类", trigger: 'blur' },
+                        ],
+                        barcode: [
+                            { required: true, message: "请生成条形码", trigger: 'change' },
+                            { required: true, message: "请生成条形码", trigger: 'blur' },
+                        ],
+                        goodsname: [
+                            { required: true, message: "请输入商品名称", trigger: 'change' },
+                            { required: true, message: "请输入商品名称", trigger: 'blur' },
+                        ],
+                        goodsprice: [
+                            { required: true, message: "请输入商品进价", trigger: 'change' },
+                            { required: true, message: "请输入商品进价", trigger: 'blur' },
+                            { type: 'number', message: "商品进价为数字", trigger: 'change' },
+
+                        ]
+                    }
                 }
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            // 验证通过
+                            $.post("/goods/add",this.ruleForm2,function (result) {
+                               //处理业务逻辑 
+                               console.log(result);
+                               if (result.code == 200) {
+                                    this.$confirm(result.message, '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning'
+                                    }).then(() => {
+                                        location.reload();
+                                    }).catch(() => {
+                                        location.href='./productManage.html';
+                                    });
+                               }
+                               else{
+                                   alert(result.message);
+                               }
+                            });
+
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                // 生成条形码
+                generateCode() {
+                    this.ruleForm2.barcode = new Date().getTime();
+                },
+                // 输入进价自动补全售价和市场价
+                fillPrice() {
+                    // this.ruleForm2.goodsprice = parseFloat(this.ruleForm2.goodsprice.toFixed(2));
+                    this.ruleForm2.saleprice = (this.ruleForm2.goodsprice*1.5).toFixed(2)
+                    this.ruleForm2.marketprice = (this.ruleForm2.saleprice*1.2).toFixed(2);
+                }
+            },
+            mounted() {
+                $.get('/category/getCategoryList', (result) => {
+                    this.options1 = result;
+                })
             },
 
         });

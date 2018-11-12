@@ -31,7 +31,31 @@
                         <span>分类管理</span>
                     </div>
                     <div class="text item">
-                        
+                        <el-table stripe :data="tableData" style="width: 100%">
+                            <el-table-column label="分类ID">
+                                <template slot-scope="scope">
+                                    <span style="margin-left: 10px">{{ scope.row.cg_id }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="分类名字">
+                                <template slot-scope="scope">
+                                    <span style="margin-left: 10px">{{ scope.row.cg_name }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="父级分类">
+                                <template slot-scope="scope">
+                                    <span style="margin-left: 10px">{{ scope.row.fathername }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="操作" width="180">
+                                <template slot-scope="scope">
+                                    <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)" plain>
+                                        <i class="el-icon-edit"></i>编辑</el-button>
+                                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" plain>
+                                        <i class="el-icon-delete"></i>删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </div>
                 </el-card>
             </el-main>
@@ -49,26 +73,53 @@
             el: "#app",
             data() {
                 return {
-                    activeName: '1',
-                    tableData: [{
-                        date: '2016-05-02',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
-                    }, {
-                        date: '2016-05-04',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1517 弄'
-                    }, {
-                        date: '2016-05-01',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1519 弄'
-                    }, {
-                        date: '2016-05-03',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1516 弄'
-                    }]
+                    tableData: []
                 }
             },
+            methods: {
+                getCategoryList() {
+                    $.get('/category/getCategoryList', (result) => {
+                        result.forEach(element => {
+                            if(element.fathername == null){
+                                element.fathername = '顶级分类';
+                            }
+                        });
+                        this.tableData = result;
+                    })
+                },
+                // 编辑
+                handleEdit(index, row) {
+                    location.href = './editClassify.html?' + row.u_id;
+                },
+                // 删除
+                handleDelete(index, row) {
+                    // 是否删除
+                    this.$confirm('此操作将永久删除该类, 是否继续?', '警告', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        $.get('/users/delUser', { "u_id": row.u_id }, (result) => {
+                            if (result.code == 200) {
+                                this.$message({
+                                    type: 'success',
+                                    message: result.message
+                                });
+                                this.getCategoryList();
+                            } else {
+                                console.log(result)
+                                this.$message.error(result.message);
+                            }
+                        });
+                    }).catch(() => {
+
+                    });
+                },
+            },
+            mounted() {
+                // ajax请求数据
+                this.getCategoryList();
+            }
 
         });
     </script>

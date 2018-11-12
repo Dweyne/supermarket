@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>超市管理系统-添加分类</title>
     <!-- 引入重置样式 -->
     <link rel="stylesheet" href="styles/reset.css">
     <!-- 引入elementUI -->
@@ -33,19 +33,20 @@
                     <div class="text item">
                         <el-form :label-position="labelPosition" :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px"
                             class="demo-ruleForm">
-                            <el-form-item label="所属分类" prop="classify_blong">
-                                <el-select v-model="ruleForm2.classify_blong" placeholder="---顶级分类---">
-                                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                            <el-form-item label="所属分类" prop="cg_id">
+                                <el-select v-model="ruleForm2.cg_id" placeholder="---顶级分类---">
+                                    <el-option value="0" label="顶级分类"></el-option>
+                                    <el-option v-for="item in options1" :key="item.cg_id" :label="item.cg_name" :value="item.cg_id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="分类名称" prop="classifyname">
-                                <el-input v-model="ruleForm2.classifyname"></el-input>
+                            <el-form-item label="分类名称" prop="cg_name">
+                                <el-input v-model="ruleForm2.cg_name"></el-input>
                             </el-form-item>
                             <el-form-item label="状态">
-                                <el-radio-group v-model="ruleForm2.status">
-                                    <el-radio label="启用"></el-radio>
-                                    <el-radio label="禁用"></el-radio>
+                                <el-radio-group v-model="ruleForm2.cg_isLocked">
+                                    <el-radio label="0">启用</el-radio>
+                                    <el-radio label="1">禁用</el-radio>
                                 </el-radio-group>
                             </el-form-item>
                             <el-form-item>
@@ -77,28 +78,19 @@
                     }
                 };
                 return {
+                    options1:[],
                     labelPosition: 'top',
-                    options: [{
-                        value: '超级管理员',
-                        label: '超级管理员'
-                    }, {
-                        value: '管理员',
-                        label: '管理员'
-                    }, {
-                        value: '普通用户',
-                        label: '普通用户'
-                    }],
                     ruleForm2: {
-                        classify_blong: '',
-                        classifyname: '',
-                        status: '禁用',
+                        cg_id: '',
+                        cg_name: '',
+                        cg_isLocked: '0',
                     },
                     rules2: {
-                        classifyname: [
-                            { required: true, message: "请输入密码", trigger: 'change' },
+                        cg_id: [
+                            { required: true, message: "请选择分类", trigger: 'change' },
                         ],
-                        classify_blong: [
-                            { required: true, message: "请选择用户组", trigger: 'change' },
+                        cg_name: [
+                            { required: true, message: "请输入分类名称", trigger: 'change' },
                         ]
                     }
                 };
@@ -108,7 +100,31 @@
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
                             // 验证通过
-                            console.log("submit")
+                            // 保存数据
+                            $.post('/category/add', this.ruleForm2, (result) => {
+                                if (result.code == 200) {
+                                    this.$confirm(result.message, '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning'
+                                    }).then(() => {
+                                        location.reload();
+                                    }).catch(() => {
+                                        location.href='./classifyManage.html';
+                                    });
+                                } else if (result.code == 100) {
+                                    this.$notify.error({
+                                        title: '错误',
+                                        message: result.message
+                                    });
+                                } else {
+                                    this.$notify.error({
+                                        title: '错误',
+                                        message: result.message
+                                    });
+                                }
+                            })
+                        
 
                         } else {
                             console.log('error submit!!');
@@ -119,7 +135,12 @@
                 resetForm(formName) {
                     this.$refs[formName].resetFields();
                 }
-            }
+            },
+            mounted() {
+                $.get('/category/getCategoryList', (result) => {
+                    this.options1 = result;
+                })
+            },
         });
     </script>
 </body>

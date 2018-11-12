@@ -1,20 +1,11 @@
 var express = require('express');
 var router = express.Router();
-// 引入mysql模块
-var mysql = require('mysql');
 // 引入md5加密模块
 var md5 = require('crypto');
 
 // 配置数据库
-var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'smms'
-})
+var connection = require('./mysqlCon');
 
-// 链接数据库
-connection.connect();
 
 /* GET users listing. */
 // 添加用户
@@ -153,6 +144,14 @@ router.get('/logout', (req, res) => {
 
   // 重定向回登录页面
   res.redirect('/login.html');
+})
+
+router.get('/forbid', (req,res) => {
+  if(!req.cookies.userName){
+    res.send("alert('非正常访问，请登录访问！');location.href='./login.html'")
+  }else{
+    res.send('');
+  }
 })
 
 module.exports = router;

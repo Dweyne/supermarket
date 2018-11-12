@@ -32,63 +32,46 @@
                     </div>
                     <div class="text item product">
                         <div class="proHeader">
-                            <el-select v-model="value8" filterable placeholder="---选择分类---" clearable style="width: 160px;">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                            <span>关键字：</span>
-                            <el-input placeholder="请输入内容" v-model="mainword" clearable style="width: 200px;">
-                            </el-input>
-                            <span>(商品名、条形码)</span>
-                            <el-button type="success" plain>搜索</el-button>
+                            <el-form :inline="true" :model="search" id="searchForm" class="demo-form-inline">
+                                <el-form-item label="所属分类">
+                                    <el-select v-model="search.category" placeholder="请选择">
+                                        <el-option v-for="(c, index) in categoryList" :key="index" :label="c.cg_name" :value="c.cg_id"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="关键词">
+                                    <el-input v-model="search.keywords" placeholder="条码或者商品名称"></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="success" @click="onSearch">查询</el-button>
+                                </el-form-item>
+                            </el-form>
                         </div>
                         <el-table stripe :data="tableData" style="width: 100%">
-                            <el-table-column label="商品条形码">
+                            <el-table-column label="商品条形码" prop="good_id" width="50px">
+                            </el-table-column>
+                            <el-table-column label="商品名称" prop="goodsname">
+                            </el-table-column>
+                            <el-table-column label="所属分类" width="100px">
                                 <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userName }}</span>
+                                    <span style="margin-left: 10px">{{ scope.row.cg_name }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="商品名称">
+                            <el-table-column label="进价(元)" width="80px">
                                 <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
+                                    <span style="margin-left: 10px">{{ scope.row.goodsprice | formatPrice }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="所属分类">
+                            <el-table-column label="市场价(元)" width="80px">
                                 <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
+                                    <span style="margin-left: 10px">{{ scope.row.marketprice | formatPrice }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="售价(元)">
+                            <el-table-column label="售价(元)" width="80px">
                                 <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
+                                    <span style="margin-left: 10px">{{ scope.row.saleprice | formatPrice }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="促销价(元)">
-                                <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="市场价(元)">
-                                <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="库存">
-                                <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="库存总额(元)">
-                                <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="销售总额(元)">
-                                <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.userGroup }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="管理" width="91">
+                            <el-table-column label="管理" width="200px">
                                 <template slot-scope="scope">
                                     <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)" plain>
                                     </el-button>
@@ -114,51 +97,82 @@
             el: "#app",
             data() {
                 return {
-                    options: [{
-                        value: '选项1',
-                        label: '黄金糕'
-                    }, {
-                        value: '选项2',
-                        label: '双皮奶'
-                    }, {
-                        value: '选项3',
-                        label: '蚵仔煎'
-                    }, {
-                        value: '选项4',
-                        label: '龙须面'
-                    }, {
-                        value: '选项5',
-                        label: '北京烤鸭'
-                    }],
-                    value8: '',
-                    mainword: '',
-                    tableData: [{
-                        date: '2016-05-02',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
-                    }, {
-                        date: '2016-05-04',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1517 弄'
-                    }, {
-                        date: '2016-05-01',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1519 弄'
-                    }, {
-                        date: '2016-05-03',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1516 弄'
-                    }]
+                    tableData: [],
+                    categoryList: [],
+                    total: 52,
+                    currentPage: 1,
+                    pageSize: 10,
+                    search: {
+                        keywords: '',
+                        category: ''
+                    }
+                };
+            },
+            filters: {
+                //过滤器做一个管道格式化价格
+                formatPrice(price) {
+                    return price.toFixed(2);
                 }
             },
-
             methods: {
-                handleEdit(index, row) {
-                    console.log(index, row);
+                //执行查询的方法
+                onSearch() {
+
+                    //查询+分页
+                    this.getDataAjax();
                 },
-                handleDelete(index, row) {
-                    console.log(index, row);
+                //编辑和删除的方法
+                handleEdit(id) {
+                    console.log("编辑的id", id);
+                },
+                handleDelete(id) {
+                    console.log("删除的id", id);
+                },
+                //抽取获取数据的ajax请求为一个公共的方法
+                getDataAjax() {
+
+                    //查询+分页
+                    let pageSearchObj = {
+                        currentPage: this.currentPage,  //当前页
+                        pageSize: this.pageSize,        //每页大小
+                        keywords: this.search.keywords, 
+                        category: this.search.category 
+                    }
+
+                    $.get("/goods/listPagerSearch", pageSearchObj, (pagerData) => {
+                        //console.log(pagerData);
+                        //{"total":15,"datalist":goodsList}
+                        this.total = pagerData.total; //符合条件的总记录数
+                        this.tableData = pagerData.datalist; //符合条件的分页数据
+                    });
+                },
+                //每页大小分页的方法
+                handleSizeChange(val) {
+                    //console.log(`每页 ${val} 条`);
+
+                    this.pageSize = val; //修改每页大小
+                    //修改每页大小后要重新调用ajax，显示新的页码的数据
+                    this.getDataAjax();
+                },
+                //当前页码改变的方法
+                handleCurrentChange(val) {
+                    //console.log(`当前页: ${val}`);
+                    this.currentPage = val;//改变页码
+
+                    //改变页码后要重新调用ajax，显示新的页码的数据
+                    this.getDataAjax();
                 }
+            },
+            mounted() {
+                //调用ajax方法获取数据+发起ajax到后端路由获取分页的数据
+                this.getDataAjax();
+
+                //填充分类
+                $.get("/category/list", (dataList) => {
+                    //把ajax请求获取的分类修改到模型上面
+                    //console.log(dataList);
+                    this.categoryList = dataList;
+                });
             }
 
         });
