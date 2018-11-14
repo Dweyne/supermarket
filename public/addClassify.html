@@ -20,7 +20,7 @@
             <!-- 头部 -->
             <el-header>
                 <h1>欢迎您&nbsp;
-                    <span>admin</span>
+                    <span>{{ userName }}</span>
                 </h1>
                 <p>查看和管理所有分类</p>
             </el-header>
@@ -64,6 +64,7 @@
     <!-- 引入vue -->
     <script src="./javascripts/vue.min.js"></script>
     <script src="./javascripts/elementUI.js"></script>
+    <script src="/users/forbid"></script>
     <script>
         //创建vue实例
         new Vue({
@@ -78,6 +79,7 @@
                     }
                 };
                 return {
+                    userName:'',
                     options1:[],
                     labelPosition: 'top',
                     ruleForm2: {
@@ -139,6 +141,9 @@
             mounted() {
                 $.get('/category/getCategoryList', (result) => {
                     this.options1 = result;
+                });
+                $.get('/getUserName', (result) => {
+                    this.userName = result.userName;
                 })
             },
         });

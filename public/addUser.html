@@ -23,7 +23,7 @@
                 <!-- 头部 -->
                 <el-header>
                     <h1>欢迎您&nbsp;
-                        <span>admin</span>
+                        <span>{{ userName }}</span>
                     </h1>
                     <p>添加管理员账号</p>
                 </el-header>
@@ -83,6 +83,7 @@
                     }
                 };
                 return {
+                    userName:'',
                     message: '',
                     labelPosition: 'top',
                     options: [{
@@ -157,7 +158,12 @@
                 resetForm(formName) {
                     this.$refs[formName].resetFields();
                 }
-            }
+            },
+            mounted() {
+                $.get('/getUserName', (result) => {
+                    this.userName = result.userName;
+                })
+            },
 
         });
     </script>

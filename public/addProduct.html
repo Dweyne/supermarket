@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles/elementUI.css">
     <!-- 引入当前页面样式 -->
     <link rel="stylesheet" href="styles/index.css">
+    <script src="/users/forbid"></script>
 </head>
 
 <body>
@@ -20,7 +21,7 @@
             <!-- 头部 -->
             <el-header>
                 <h1>欢迎您&nbsp;
-                    <span>admin</span>
+                    <span>{{ userName }}</span>
                 </h1>
                 <p>1.你可以在这里添加新的商品或者编辑已有的商品。2.新添加商品的时候可以同时进行入库(入库必须有数量和进价)！3.带
                     <span style="color: red">*</span>的项目必填</p>
@@ -104,7 +105,8 @@
             el: "#app",
             data() {
                 return {
-                    options1:[],
+                    userName:'',
+                    options1: [],
                     labelPosition: 'top',
                     ruleForm2: {
                         cg_id: '',
@@ -147,23 +149,20 @@
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
                             // 验证通过
-                            $.post("/goods/add",this.ruleForm2,function (result) {
-                               //处理业务逻辑 
-                               console.log(result);
-                               if (result.code == 200) {
-                                    this.$confirm(result.message, '提示', {
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '取消',
-                                        type: 'warning'
-                                    }).then(() => {
+                            $.post("/goods/add", this.ruleForm2, function (result) {
+                                //处理业务逻辑 
+                                console.log(result);
+                                if (result.code == 200) {
+                                    if (confirm(result.message)) {
                                         location.reload();
-                                    }).catch(() => {
-                                        location.href='./productManage.html';
-                                    });
-                               }
-                               else{
-                                   alert(result.message);
-                               }
+                                    } else {
+                                        location.href = './productManage.html';
+                                    }
+
+                                }
+                                else {
+                                    alert(result.message);
+                                }
                             });
 
                         } else {
@@ -182,13 +181,16 @@
                 // 输入进价自动补全售价和市场价
                 fillPrice() {
                     // this.ruleForm2.goodsprice = parseFloat(this.ruleForm2.goodsprice.toFixed(2));
-                    this.ruleForm2.saleprice = (this.ruleForm2.goodsprice*1.5).toFixed(2)
-                    this.ruleForm2.marketprice = (this.ruleForm2.saleprice*1.2).toFixed(2);
+                    this.ruleForm2.saleprice = (this.ruleForm2.goodsprice * 1.5).toFixed(2)
+                    this.ruleForm2.marketprice = (this.ruleForm2.saleprice * 1.2).toFixed(2);
                 }
             },
             mounted() {
                 $.get('/category/getCategoryList', (result) => {
                     this.options1 = result;
+                });
+                $.get('/getUserName', (result) => {
+                    this.userName = result.userName;
                 })
             },
 

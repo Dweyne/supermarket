@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles/elementUI.css">
     <!-- 引入当前页面样式 -->
     <link rel="stylesheet" href="styles/index.css">
+    <script src="/users/forbid"></script>
 </head>
 
 <body>
@@ -22,7 +23,7 @@
                 <!-- 头部 -->
                 <el-header>
                     <h1>欢迎您&nbsp;
-                        <span>admin</span>
+                        <span>{{ userName }}</span>
                     </h1>
                     <p>添加管理员账号</p>
                 </el-header>
@@ -81,6 +82,7 @@
                     }
                 };
                 return {
+                    userName:'',
                     message: '',
                     labelPosition: 'top',
                     options: [{
@@ -162,6 +164,9 @@
                     this.ruleForm2.u_id = result[0].u_id;
                     this.ruleForm2.username = result[0].userName;
                     this.ruleForm2.usergroup = result[0].userGroup;
+                });
+                $.get('/getUserName', (result) => {
+                    this.userName = result.userName;
                 })
             }
 

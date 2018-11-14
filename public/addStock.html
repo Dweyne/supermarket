@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles/elementUI.css">
     <!-- 引入当前页面样式 -->
     <link rel="stylesheet" href="styles/index.css">
+    <script src="/users/forbid"></script>
 </head>
 
 <body>
@@ -22,28 +23,29 @@
                 <h1>欢迎您&nbsp;
                     <span>{{ userName }}</span>
                 </h1>
-                <p>修改账号密码</p>
+                <p>商品入库。带
+                    <span style="color: red">*</span>的项目必填</p>
             </el-header>
             <!-- 内容 -->
             <el-main>
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
-                        <span>修改账号密码</span>
+                        <span>商品入库</span>
                     </div>
-                    <div class="text item">
+                    <div class="text item inStock">
                         <el-form :label-position="labelPosition" :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
-                            <el-form-item label="原密码" prop="oldpass">
-                                <el-input type="password" v-model="ruleForm2.oldpass" autocomplete="off"></el-input>
+                            <el-form-item label="商品条形码" prop="barcode">
+                                <el-input v-model.number="ruleForm2.barcode"></el-input>
                             </el-form-item>
-                            <el-form-item label="新密码" prop="newpass">
-                                <el-input type="password" v-model="ruleForm2.newpass" autocomplete="off"></el-input>
+                            <el-form-item label="数量" prop="inStock">
+                                <el-input v-model.number="ruleForm2.inStock"></el-input>
                             </el-form-item>
-                            <el-form-item label="确认新密码" prop="checkPass">
-                                <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off"></el-input>
+                            <el-form-item label="进价" prop="goodsprice">
+                                <el-input v-model.number="ruleForm2.goodsprice"></el-input> 元
                             </el-form-item>
+                           
                             <el-form-item>
-                                <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
-                                <el-button @click="resetForm('ruleForm2')">重置</el-button>
+                                <el-button type="primary" @click="submitForm('ruleForm2')">入库</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -56,56 +58,44 @@
     <!-- 引入vue -->
     <script src="./javascripts/vue.min.js"></script>
     <script src="./javascripts/elementUI.js"></script>
-    <script src="/users/forbid"></script>
     <script>
         //创建vue实例
         new Vue({
             //挂载视图
             el: "#app",
             data() {
-                var validatePass2 = (rule, value, callback) => {
-                    if (value !== this.ruleForm2.newpass) {
-                        callback(new Error('两次输入密码不一致!'));
-                    } else {
-                        callback();
-                    }
-                };
                 return {
-                    userName:'',
+                    userName: '',
                     labelPosition: 'top',
                     ruleForm2: {
-                        oldpass: '',
-                        newpass: '',
-                        checkPass: '',
+                        barcode: '',
+                        inStock: null,
+                        goodsprice: null
                     },
                     rules2: {
-                        oldpass: [
-                            { required: true, message: "请输入原密码", trigger: 'blur' }
+                        barcode: [
+                            { required:true, message:"请输入商品条形码", trigger: 'blur' }
                         ],
-                        newpass: [
-                            { required: true, message: "请输入新密码", trigger: 'blur' },
-                            { min:6, max:12, message:"新密码长度位为6-12位", trigger: 'change'}
+                        inStock: [
+                            { required:true, message:"请输入入库数量", trigger: 'blur' }
                         ],
-                        checkPass: [
-                            { required: true, message: "请再次输入密码", trigger:'change'},
-                            { validator: validatePass2, trigger: 'change' }
-                        ],
+                        goodsprice: [
+                            { required:true, message:"请输入商品进价", trigger: 'blur' }
+                        ]
                     }
-                };
+                }
             },
             methods: {
                 submitForm(formName) {
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
-                            alert('submit!');
+                            // 将入库信息更新到表中
+                            $.post
                         } else {
                             console.log('error submit!!');
                             return false;
                         }
                     });
-                },
-                resetForm(formName) {
-                    this.$refs[formName].resetFields();
                 }
             },
             mounted() {

@@ -62,7 +62,7 @@ router.get("/listPagerSearch",(req,res)=>{
   
       //分类
       if(category.length>0){
-        sqlStr+=` and cg_id=${category}`;
+        sqlStr+=` and t1.cg_id=${category}`;
       }
   
       //执行查询的sql结果

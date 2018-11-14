@@ -23,13 +23,13 @@
                 <h1>欢迎您&nbsp;
                     <span>{{ userName }}</span>
                 </h1>
-                <p>查看和管理所有已有的商品</p>
+                <p>查看详细的系统信息</p>
             </el-header>
             <!-- 内容 -->
             <el-main>
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
-                        <span>商品管理</span>
+                        <span>系统信息</span>
                     </div>
                     <div class="text item product">
                         <div class="proHeader">
@@ -52,24 +52,24 @@
                             </el-table-column>
                             <el-table-column label="商品名称" prop="goodsname">
                             </el-table-column>
-                            <el-table-column label="所属分类" width="100px">
-                                <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.cg_name }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="进价(元)" width="80px" class-name="fontRed">
+                            <el-table-column label="进价(元)" width="100px">
                                 <template slot-scope="scope">
                                     <span style="margin-left: 10px">{{ scope.row.goodsprice | formatPrice }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="市场价(元)" width="80px">
+                            <el-table-column label="入库" width="80px" class-name="fontRed">
                                 <template slot-scope="scope">
-                                    <span style="margin-left: 10px">{{ scope.row.marketprice | formatPrice }}</span>
+                                    <span style="margin-left: 10px">{{ scope.row.outStock }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="售价(元)" width="80px">
+                            <el-table-column label="库存" width="80px">
                                 <template slot-scope="scope">
-                                    <span style="margin-left: 10px" class="fontRed">{{ scope.row.saleprice | formatPrice }}</span>
+                                    <span style="margin-left: 10px">{{ scope.row.stockNum }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="已售" width="80px">
+                                <template slot-scope="scope">
+                                    <span style="margin-left: 10px" class="fontRed">{{ scope.row.outStock }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column label="管理" width="98px">
@@ -104,7 +104,7 @@
             el: "#app",
             data() {
                 return {
-                    userName:'',
+                    userName: '',
                     tableData: [],
                     categoryList: [],
                     total: 52,
@@ -141,10 +141,9 @@
                     let pageSearchObj = {
                         currentPage: this.currentPage,  //当前页
                         pageSize: this.pageSize,        //每页大小
-                        keywords: this.search.keywords, 
-                        category: this.search.category 
+                        keywords: this.search.keywords,
+                        category: this.search.category
                     }
-
                     $.get("/goods/listPagerSearch", pageSearchObj, (pagerData) => {
                         //console.log(pagerData);
                         //{"total":15,"datalist":goodsList}
@@ -155,7 +154,7 @@
                 //每页大小分页的方法
                 handleSizeChange(val) {
                     //修改每页大小
-                    this.pageSize = val; 
+                    this.pageSize = val;
                     //修改每页大小后要重新调用ajax，显示新的页码的数据
                     this.getDataAjax();
                 },
@@ -179,7 +178,6 @@
                     this.userName = result.userName;
                 })
             }
-
         });
     </script>
 </body>

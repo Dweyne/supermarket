@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles/elementUI.css">
     <!-- 引入当前页面样式 -->
     <link rel="stylesheet" href="styles/index.css">
+    <script src="/users/forbid"></script>
 </head>
 
 <body>
@@ -22,7 +23,7 @@
                 <!-- 头部 -->
                 <el-header>
                     <h1>欢迎您&nbsp;
-                        <span>admin</span>
+                        <span>{{ userName }}</span>
                     </h1>
                     <p>查看所有管理员的账号</p>
                 </el-header>
@@ -82,6 +83,7 @@
             el: "#app",
             data() {
                 return {
+                    userName:'',
                     tableData: []
                 }
             },
@@ -128,6 +130,11 @@
             mounted() {
                 // ajax请求数据
                 this.getUserList();
+                
+                $.get('/getUserName', (result) => {
+                    this.userName = result.userName;
+                })
+          
             }
         });
 
