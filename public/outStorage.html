@@ -23,31 +23,51 @@
                 <h1>欢迎您&nbsp;
                     <span>{{ userName }}</span>
                 </h1>
-                <p>商品入库。带
-                    <span style="color: red">*</span>的项目必填</p>
+                <p>商品销售。带
+                    <span style="color: red">*</span>的项目必填。先把商品加入订单后。所有商品都加入订单后点击
+                    <span style="color: red">确认提交</span>完成！</p>
             </el-header>
             <!-- 内容 -->
             <el-main>
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
-                        <span>商品入库</span>
+                        <span>系统信息</span>
                     </div>
-                    <div class="text item inStock">
+                    <div class="text item">
                         <el-form :label-position="labelPosition" :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px"
                             class="demo-ruleForm">
                             <el-form-item label="商品条形码" prop="barcode">
                                 <el-input v-model.number="ruleForm2.barcode"></el-input>
                             </el-form-item>
-                            <el-form-item label="数量" prop="inStock">
-                                <el-input v-model.number="ruleForm2.inStock"></el-input>
-                            </el-form-item>
-                            <el-form-item label="进价" prop="goodsprice">
-                                <el-input v-model.number="ruleForm2.goodsprice"></el-input> 元
+                            <el-form-item label="数量" prop="outStock">
+                                <el-input v-model.number="ruleForm2.outStock" class="outStock"></el-input>
+                                <span>计重单位为千克</span>
                             </el-form-item>
 
                             <el-form-item>
-                                <el-button type="primary" @click="submitForm('ruleForm2')">入库</el-button>
+                                <el-button type="success" @click="submitForm('ruleForm2')">加入订单</el-button>
                             </el-form-item>
+                            <el-table :data="tableData" stripe style="width: 100%">
+                                <el-table-column prop="goodsname" label="名称" width="">
+                                </el-table-column>
+                                <el-table-column prop="outStock" label="数量" width="">
+                                </el-table-column>
+                                <el-table-column prop="goodsprice" label="单价（元）">
+                                </el-table-column>
+                                <el-table-column prop="totalprice" label="总价（元）">
+
+                                </el-table-column>
+                                <el-table-column prop="discount" label="优惠总价（元）">
+                                </el-table-column>
+                            </el-table>
+                            <el-form-item label="会员卡号">
+                                <el-input></el-input>
+                                <p>填写会员卡卡号</p>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="success" @click="add">确认订单</el-button>
+                            </el-form-item>
+
                         </el-form>
                     </div>
                 </el-card>
@@ -68,21 +88,19 @@
                 return {
                     userName: '',
                     labelPosition: 'top',
+                    address: 0,
                     ruleForm2: {
                         barcode: '',
-                        inStock: null,
-                        goodsprice: null
+                        outStock: null,
                     },
+                    tableData: [],
                     rules2: {
                         barcode: [
                             { required: true, message: "请输入商品条形码", trigger: 'blur' }
                         ],
-                        inStock: [
+                        outStock: [
                             { required: true, message: "请输入入库数量", trigger: 'blur' }
                         ],
-                        goodsprice: [
-                            { required: true, message: "请输入商品进价", trigger: 'blur' }
-                        ]
                     }
                 }
             },
@@ -91,19 +109,11 @@
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
                             // 将入库信息更新到表中
-                            $.post('/goods/inStock', this.ruleForm2, (result) => {
+                            $.get('/goods/getOutStock', this.ruleForm2, (result) => {
                                 if (result.code == 200) {
-                                    this.$alert(result.message, '提示', {
-                                        confirmButtonText: '确定',
-                                        callback: action => {
-                                            location.href = "./stockManage.html"
-                                        }
-                                    });
-                                }else{
-                                    this.$alert(result.message, '提示', {
-                                        confirmButtonText: '确定',
-                                    });
+                                    this.tableData.push(result.message);
                                 }
+
                             })
                         } else {
                             console.log('error submit!!');
@@ -113,9 +123,30 @@
                 },
                 resetForm(formName) {
                     this.$refs[formName].resetFields();
+                },
+                add() {
+                    // let dataList = this.tableData;
+                    // let dataObj = {"data":{ 'dataLiat':this.tableData}};
+                    $.post('/goods/outStock', { data1: JSON.stringify({ data: this.tableData }) }, (result) => {
+                        // console.log(dataObj)
+                        console.log(result);
+                        if (result.code == 200) {
+                            this.$alert(result.message, '提示', {
+                                confirmButtonText: '确定',
+                                callback: action => {
+                                    location.href = "./stockManage.html"
+                                }
+                            });
+                        } else {
+                            this.$alert(result.message, '提示', {
+                                confirmButtonText: '确定',
+                            });
+                        }
+                    })
                 }
             },
             mounted() {
+
                 $.get('/getUserName', (result) => {
                     this.userName = result.userName;
                 })
